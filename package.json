@@ -1,0 +1,37 @@
+{
+  "name": "saju",
+  "version": "1.0.0",
+  "description": "한국식 사주 계산기 — 명식·궁합·택일. 만세력·절기·십신을 엔진이 계산한다.",
+  "bin": {
+    "saju": "bin/saju.cjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "vendor",
+    "references",
+    "SKILL.md"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wineny/saju.git"
+  },
+  "homepage": "https://github.com/wineny/saju#readme",
+  "bugs": {
+    "url": "https://github.com/wineny/saju/issues"
+  },
+  "keywords": [
+    "saju",
+    "사주",
+    "택일",
+    "궁합",
+    "만세력",
+    "명리",
+    "bazi",
+    "korean-astrology"
+  ]
+}

@@ -20,6 +20,29 @@ const DOW = ['일', '월', '화', '수', '목', '금', '토'];
 const LINE = '─'.repeat(78);
 
 /** 한글은 터미널에서 폭 2를 먹는다. padEnd 로는 표가 어긋나서 직접 잰다. */
+/**
+ * 화면에 찍는 진태양시 보정값 — 실제 명식 계산에 쓰인 값과 같아야 한다.
+ * 경도 보정만 표시하면 균시차만큼(연중 −14~+16분) 거짓말이 된다.
+ */
+const shiftLabel = (lon, clock) => {
+  const byLon  = (lon - 135) * 4;
+  const total  = solarTimeShiftMin(lon, clock.y, clock.m, clock.d);
+  const eot    = total - byLon;
+  return `${total.toFixed(0)}분 보정 (경도 ${byLon.toFixed(0)}분 + 균시차 ${eot >= 0 ? '+' : ''}${eot.toFixed(0)}분)`;
+};
+
+/** 택일은 날짜 구간이라 균시차가 날마다 달라진다. 양 끝값을 범위로 보여준다. */
+const rangeShiftLabel = (lon, from, to) => {
+  const at = (s) => solarTimeShiftMin(lon, ...s.split('-').map(Number));
+  const a = at(from), b = at(to);
+  const byLon = (lon - 135) * 4;
+  const lo = Math.min(a, b), hi = Math.max(a, b);
+  const span = lo.toFixed(0) === hi.toFixed(0)
+    ? `${lo.toFixed(0)}분`
+    : `${lo.toFixed(0)}~${hi.toFixed(0)}분`;
+  return `${span} 보정 (경도 ${byLon.toFixed(0)}분 + 균시차, 날짜마다 다름)`;
+};
+
 const wcw = (s) => [...String(s)].reduce((a, ch) => a + (ch.codePointAt(0) > 0x1100 ? 2 : 1), 0);
 const padK = (s, w) => String(s) + ' '.repeat(Math.max(0, w - wcw(s)));
 
@@ -85,7 +108,7 @@ function parseArgs(argv) {
       case '--dow': o.dow = next(); break;
       case '--exclude': o.exclude = next().split(',').map(s => s.trim()); break;
       case '--json': o.json = true; break;
-      case '--no-solar-time': o.lon = 135; o.city = '보정 없음'; break;
+      case '--no-solar-time': o.lon = null; o.city = '진태양시 보정 끔'; break;
       case '--city': {
         const c = next();
         if (!(c in CITIES)) throw new Error(`모르는 도시입니다: ${c}\n  아는 도시: ${Object.keys(CITIES).join(' ')}\n  또는 --lon 으로 경도를 직접 주세요.`);
@@ -141,7 +164,7 @@ function cmdChart(o) {
 
   if (o.json) return console.log(JSON.stringify({ born: o.born, city: o.city, chart: c, power: wuxingPower(c) }, null, 2));
 
-  console.log(`\n사주 명식 — ${o.born}  (${o.city}, 진태양시 ${solarTimeShiftMin(o.lon).toFixed(0)}분 보정)`);
+  console.log(`\n사주 명식 — ${o.born}  (${o.city}${o.lon === null ? '' : `, 진태양시 ${shiftLabel(o.lon, c.clock)}`})`);
   if (c.timeUnknown) console.log('⚠ 태어난 시각을 몰라 시주는 계산하지 않았습니다. 년·월·일주만 유효합니다.');
   console.log(LINE);
   printChartBlock(c);
@@ -274,7 +297,7 @@ function cmdTaegil(o) {
 
   console.log(`\n택일 — ${o.from} ~ ${o.to}`);
   console.log(`가능 시각 ${o.hours}${o.dow ? ` · 가능 요일 ${o.dow}` : ''} · ${o.step}분 간격`);
-  console.log(`${o.city} 기준 진태양시 ${solarTimeShiftMin(o.lon).toFixed(0)}분 보정`);
+  console.log(o.lon === null ? o.city : `${o.city} 기준 진태양시 ${rangeShiftLabel(o.lon, o.from, o.to)}`);
   parents.forEach(p => {
     const shown = p.chart.pillars.filter(x => x !== '??').map(pillarKo).join(' ');
     console.log(`${p.label} 명식: ${shown}${p.chart.timeUnknown ? '  (시주 모름 — 궁합은 일주로만 봄)' : ''}`);
