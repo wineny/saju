@@ -2,6 +2,14 @@
 
 **제왕절개 날짜, 이사 날짜처럼 후보가 수십 개일 때** 하나씩 보지 않고 구간을 통째로 계산해 점수로 줄 세운다. 만세력·절기·십신은 전부 엔진이 계산하고 사람은 결과만 본다.
 
+<!-- gitreels:start -->
+<p align="center">
+  <a href="https://gitreels.com/wineny/saju"><img src="https://gitreels.com/wineny/saju.webp" alt="wineny/saju in 15 seconds" width="100%"></a>
+  <br>
+  <a href="https://gitreels.com"><img src="https://gitreels.com/badge.svg" alt="Made with GitReels" height="24"></a>
+</p>
+<!-- gitreels:end -->
+
 ```
 [1위] 2028-03-21(화) 11:39~13:38  —  71점
   · 오행 다섯 기운이 모두 있음
